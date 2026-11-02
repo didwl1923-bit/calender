@@ -11,12 +11,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="ᶜᵃˡᵉᶰᵈᵉʳ">
   
-  <!-- 🍀 핸드폰 홈 화면 & 브라우저 탭 클로버 아이콘 -->
+  <!-- 🍀 아이콘 & 매니페스트 인라인 설정 -->
   <link rel="apple-touch-icon" href="https://i.imgur.com/2SEibeV.jpeg">
   <link rel="shortcut icon" href="https://i.imgur.com/2SEibeV.jpeg">
   <link rel="icon" href="https://i.imgur.com/2SEibeV.jpeg">
-  
-  <!-- 🚀 브라우저 앱 설치([설치] 버튼 활성화) 매니페스트 인라인 설정 -->
   <link rel="manifest" href='data:application/manifest+json,{"name":"ᶜᵃˡᵉᶰᵈᵉʳ","short_name":"ᶜᵃˡᵉᶰᵈᵉʳ","start_url":".","display":"standalone","background_color":"#ffffff","theme_color":"#ffffff","icons":[{"src":"https://i.imgur.com/2SEibeV.jpeg","sizes":"192x192","type":"image/jpeg"},{"src":"https://i.imgur.com/2SEibeV.jpeg","sizes":"512x512","type":"image/jpeg"}]}'>
 
   <title>ᶜᵃˡᵉᶰᵈᵉʳ</title>
@@ -42,6 +40,10 @@
       --modal-bg: #ffffff;
       --modal-item-bg: #f8fafc;
       --other-month-bg: #fafafa;
+      
+      /* 일정(Event) 스타일 (라이트 모드) */
+      --event-bg: #f1f5f9;
+      --event-text: #1e293b;
     }
 
     /* 다크 모드 변수 */
@@ -50,7 +52,7 @@
       --card-bg: #1e293b;
       --primary: #818cf8;
       --text-main: #f8fafc;
-      --text-sub: #94a3b8;
+      --text-sub: #ffffff; /* 2. 다크모드 이름 글씨 흰색 */
       --border: #334155;
       --border-light: #334155;
       --sun-red: #f87171;
@@ -59,6 +61,10 @@
       --modal-bg: #1e293b;
       --modal-item-bg: #0f172a;
       --other-month-bg: #0f172a;
+
+      /* 4. 다크모드 일정 바탕 흰색 & 글자 검정 */
+      --event-bg: #ffffff;
+      --event-text: #000000;
     }
 
     * {
@@ -114,12 +120,6 @@
       font-size: 1.15rem;
       font-weight: 800;
       color: var(--text-main);
-    }
-
-    .title-area p {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      margin-top: 2px;
     }
 
     .theme-toggle-group {
@@ -360,22 +360,30 @@
       justify-content: center;
     }
 
+    /* 근무 타입별 색상 지정 */
     .badge-D { background: #FFD000; color: #111; }
     .badge-S { background: #4B8BF5; color: #fff; }
-    .badge-G { background: #333333; color: #fff; }
+    .badge-G { background: #000000; color: #fff; } /* 1. G 배경색 #000000 */
     .badge-O { background: #B85EE6; color: #fff; }
-    .badge-F { background: #2ECC71; color: #fff; }
+    .badge-F { background: #00C9A7; color: #fff; } /* 5. F 겹치지 않는 선명한 민트 */
+    .badge-교 { background: #FF6B35; color: #fff; } /* 3. 교 주황/코랄 계열 추가 */
     .badge-휴 { background: #FFF0F5; color: #E04868; border: 1.5px solid #F8BBD0; }
 
+    /* 6. 다크모드 '휴' 배경 투명 & 글자 빨강 */
     body.dark-mode .badge-휴 {
-      background: #3b111e;
-      color: #f472b6;
-      border: 1.5px solid #831843;
+      background: transparent;
+      color: #FF4D4D;
+      border: 1.5px solid #FF4D4D;
     }
 
+    /* 4. 일정(Event) 텍스트 및 배경 */
     .inline-event {
       font-size: 0.58rem;
-      color: var(--text-main);
+      background: var(--event-bg);
+      color: var(--event-text);
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 600;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -469,15 +477,16 @@
 
     .btn-group {
       display: flex;
-      gap: 5px;
+      gap: 4px;
+      flex-wrap: wrap;
     }
 
     .shift-btn {
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       font-weight: 800;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       cursor: pointer;
       transition: all 0.15s ease;
       display: flex;
@@ -485,17 +494,19 @@
       justify-content: center;
     }
 
+    /* 모달 팝업 버튼 색상 정의 */
     .btn-D { background: #FFD000; color: #111; border: none; }
     .btn-S { background: #4B8BF5; color: #fff; border: none; }
-    .btn-G { background: #333333; color: #fff; border: none; }
+    .btn-G { background: #000000; color: #fff; border: none; } /* 1. G */
     .btn-O { background: #B85EE6; color: #fff; border: none; }
-    .btn-F { background: #2ECC71; color: #fff; border: none; }
+    .btn-F { background: #00C9A7; color: #fff; border: none; } /* 5. F */
+    .btn-교 { background: #FF6B35; color: #fff; border: none; } /* 3. 교 */
     .btn-휴 { background: #FFF0F5; color: #E04868; border: 1.5px solid #F8BBD0; }
 
     body.dark-mode .btn-휴 {
-      background: #3b111e;
-      color: #f472b6;
-      border: 1.5px solid #831843;
+      background: transparent;
+      color: #FF4D4D;
+      border: 1.5px solid #FF4D4D;
     }
 
     .shift-btn.active {
@@ -574,7 +585,6 @@
       <div class="title-wrapper">
         <div class="title-area">
           <h1 id="header-title">༼ つ -'o'- ༽つ 🅒🅐🅛🅔🅝🅓🅔🅡</h1>
-          <p></p>
         </div>
         <div class="theme-toggle-group">
           <button class="theme-btn active" id="btn-sun" onclick="setTheme('light')" title="라이트 모드">☀️</button>
@@ -666,7 +676,8 @@
       "10-09": "한글날", "12-25": "성탄절"
     };
 
-    var SHIFTS = ['D', 'S', 'G', 'O', 'F', '휴'];
+    /* 3. SHIFTS 배열에 '교' 추가 */
+    var SHIFTS = ['D', 'S', 'G', 'O', 'F', '교', '휴'];
     var currentDate = new Date();
     var selectedDateStr = "";
     
@@ -686,7 +697,7 @@
         document.body.classList.add('dark-mode');
         btnSun.classList.remove('active');
         btnMoon.classList.add('active');
-        title.innerText = "༼ つ -'o'- ༽つ ⓒⓐⓛⓔⓝⓓⓔⓡ";
+        title.innerText = "༼ つ -'o'- ༽つⓒⓐⓛⓔⓝⓓⓔⓡ";
         localStorage.setItem('theme', 'dark');
       } else {
         document.body.classList.remove('dark-mode');
