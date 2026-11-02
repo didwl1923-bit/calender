@@ -655,6 +655,10 @@
   </div>
 
   <script>
+    // PWA 앱 설치(WebAPK) 요건을 충족하기 위한 인라인 서비스 워커 등록
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('data:text/javascript;charset=utf-8,' + encodeURIComponent("self.addEventListener('fetch', () => {});"));
+}
     const firebaseConfig = {
       apiKey: "AIzaSyA_3YfWXlddnwcNO8cARA9V9z4MKNzQLck",
       authDomain: "calender-e9fdf.firebaseapp.com",
