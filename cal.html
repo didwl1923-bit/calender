@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- 🍀 핸드폰 홈 화면 & 브라우저 탭 클로버 아이콘 -->
+  <link rel="apple-touch-icon" href="https://i.imgur.com/2SEibeV.jpeg">
+  <link rel="shortcut icon" href="https://i.imgur.com/2SEibeV.jpeg">
+  <link rel="icon" href="https://i.imgur.com/2SEibeV.jpeg">
+  <title>ᶜᵃˡᵉᶰᵈᵉʳ</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+  <style>
+    /* 기본 (라이트) 모드 변수 */
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --primary: #6366f1;
+      --text-main: #1e293b;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --sun-red: #ef4444;
+      --sat-blue: #3b82f6;
+      --side-bg: #f8fafc;
+      --modal-bg: #ffffff;
+      --modal-item-bg: #f8fafc;
+      --other-month-bg: #fafafa;
+    }
+
+    /* 다크 모드 변수 */
+    body.dark-mode {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --primary: #818cf8;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --border: #334155;
+      --border-light: #334155;
+      --sun-red: #f87171;
+      --sat-blue: #60a5fa;
+      --side-bg: #0f172a;
+      --modal-bg: #1e293b;
+      --modal-item-bg: #0f172a;
+      --other-month-bg: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      touch-action: pan-y;
+      transition: background 0.2s ease;
+    }
+
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .title-area h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .title-area p {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* ☀️/🌙 두 개의 모드 토글 그룹 버튼 */
+    .theme-toggle-group {
+      display: flex;
+      background: var(--modal-item-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .theme-btn {
+      background: none;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0.4;
+    }
+
+    .theme-btn.active {
+      opacity: 1;
+      background: var(--card-bg);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .user-config {
+      display: flex;
+      padding: 12px 16px;
+      gap: 12px;
+      background: var(--side-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .user-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .user-box label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .user-box input {
+      border: none;
+      background: transparent;
+      width: 100%;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      color: var(--text-main);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+    }
+
+    .calendar-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      color: var(--text-sub);
+      padding: 4px 12px;
+      cursor: pointer;
+    }
+
+    .weekdays-wrapper {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
+    }
+
+    .side-label-header {
+      width: 38px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      background: var(--side-bg);
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      padding: 8px 0;
+      flex: 1;
+    }
+
+    .weekdays div:nth-child(1) { color: var(--sun-red); }
+    .weekdays div:nth-child(7) { color: var(--sat-blue); }
+
+    .calendar-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      user-select: none;
+    }
+
+/* 📌 가로 행 높이 85px로 엄격 고정 및 넘침 숨김 */
+    .week-row {
+      display: flex;
+      height: 85px;
+      border-bottom: 1px solid var(--border-light);
+      overflow: hidden;
+    }
+
+
+      .side-user-cell {
+      width: 38px;
+      height: 85px;
+      flex-shrink: 0;
+      background: var(--side-bg);
+      border-right: 1px solid var(--border);
+      padding: 4px 2px 6px 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+      overflow: hidden;
+    }
+   .days-grid-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      flex: 1;
+      height: 85px;
+    }
+    .side-name-tag {
+      height: 20px;
+      line-height: 20px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 34px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .days-grid-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      flex: 1;
+    }
+
+     /* 📌 날짜 셀 높이 85px 엄격 고정 & 일정 넘침 숨김 처리 */
+    .day-cell {
+      border-right: 1px solid var(--border-light);
+      padding: 4px 2px 6px 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      height: 85px;
+      overflow: hidden;
+    }
+    .shifts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow: hidden;
+    }
+    .day-cell:nth-child(7n) { border-right: none; }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2px;
+      height: 18px;
+    }
+
+    .day-num {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .is-sun, .is-holiday { color: var(--sun-red) !important; }
+    .is-sat { color: var(--sat-blue); }
+
+    .other-month {
+      opacity: 0.25;
+      background-color: var(--other-month-bg);
+      cursor: default;
+    }
+
+    .holiday-name {
+      font-size: 0.58rem;
+      color: var(--sun-red);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 35px;
+    }
+
+    .shifts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .shift-row {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .badge {
+      padding: 1px 5px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.62rem;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 배지 색상 팔레트 */
+    .badge-D { background: #FFD000; color: #111; }
+    .badge-S { background: #4B8BF5; color: #fff; }
+    .badge-G { background: #333333; color: #fff; }
+    .badge-O { background: #B85EE6; color: #fff; }
+    .badge-F { background: #2ECC71; color: #fff; }
+    .badge-휴 { background: #FFF0F5; color: #E04868; border: 1.5px solid #F8BBD0; }
+
+    body.dark-mode .badge-휴 {
+      background: #3b111e;
+      color: #f472b6;
+      border: 1.5px solid #831843;
+    }
+
+    .inline-event {
+      font-size: 0.58rem;
+      color: var(--text-main);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal.active { display: flex; }
+
+    .modal-content {
+      background: var(--modal-bg);
+      color: var(--text-main);
+      width: 100%;
+      max-width: 480px;
+      border-radius: 16px 16px 0 0;
+      padding: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-nav-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .modal-date-btn {
+      background: var(--modal-item-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      background: var(--modal-item-bg);
+      border: 1px solid var(--border);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .shift-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .user-shift-select {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-shift-select span {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 5px;
+    }
+
+    .shift-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-D { background: #FFD000; color: #111; border: none; }
+    .btn-S { background: #4B8BF5; color: #fff; border: none; }
+    .btn-G { background: #333333; color: #fff; border: none; }
+    .btn-O { background: #B85EE6; color: #fff; border: none; }
+    .btn-F { background: #2ECC71; color: #fff; border: none; }
+    .btn-휴 { background: #FFF0F5; color: #E04868; border: 1.5px solid #F8BBD0; }
+
+    body.dark-mode .btn-휴 {
+      background: #3b111e;
+      color: #f472b6;
+      border: 1.5px solid #831843;
+    }
+
+    .shift-btn.active {
+      transform: scale(1.15);
+      box-shadow: 0 0 0 3px var(--primary);
+    }
+
+    .event-user-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .event-user-selector label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .event-input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .event-input-group input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: var(--modal-item-bg);
+      color: var(--text-main);
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .primary-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .modal-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-event-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--modal-item-bg);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .del-btn {
+      color: var(--sun-red);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="swipe-area">
+    <header>
+      <div class="title-wrapper">
+        <div class="title-area">
+          <h1 id="header-title">༼ つ -'o'- ༽つ 🅒🅐🅛🅔🅝🅓🅔🅡</h1>
+          <p></p>
+        </div>
+        <!-- ☀️ 해 / 🌙 달 나열형 모드 선택 버튼 -->
+        <div class="theme-toggle-group">
+          <button class="theme-btn active" id="btn-sun" onclick="setTheme('light')" title="라이트 모드">☀️</button>
+          <button class="theme-btn" id="btn-moon" onclick="setTheme('dark')" title="다크 모드">🌙</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="user-config">
+      <div class="user-box">
+        <label>A</label>
+        <input type="text" id="userA-name" value="양지" onchange="saveUserNames()">
+      </div>
+      <div class="user-box">
+        <label>B</label>
+        <input type="text" id="userB-name" value="상준" onchange="saveUserNames()">
+      </div>
+    </div>
+
+    <div class="calendar-header">
+      <button class="nav-btn" onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+      <h2 id="month-year-display"></h2>
+      <button class="nav-btn" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <div class="weekdays-wrapper">
+      <div class="side-label-header"></div>
+      <div class="weekdays">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+    </div>
+
+    <div class="calendar-body" id="calendar-body"></div>
+  </div>
+
+  <div class="modal" id="day-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-nav-title">
+          <button class="modal-date-btn" onclick="navigateModalDate(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="modal-title" id="modal-date-title"></div>
+          <button class="modal-date-btn" onclick="navigateModalDate(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <button class="icon-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="shift-select-group">
+        <div class="user-shift-select">
+          <span id="label-userA"></span>
+          <div class="btn-group" id="group-userA"></div>
+        </div>
+        <div class="user-shift-select">
+          <span id="label-userB"></span>
+          <div class="btn-group" id="group-userB"></div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid var(--border); padding-top: 16px; margin-top: 16px;">
+        <h4 style="font-size:0.85rem; margin-bottom: 8px;">일정 추가</h4>
+        <div class="event-user-selector">
+          <label><input type="radio" name="event-user" value="A" checked> <span id="radio-userA-label">양지</span></label>
+          <label><input type="radio" name="event-user" value="B"> <span id="radio-userB-label">상준</span></label>
+        </div>
+        <div class="event-input-group">
+          <input type="text" id="new-event-text" placeholder="새 일정 입력...">
+          <button class="primary-btn" onclick="addEvent()">추가</button>
+        </div>
+        <div class="modal-events-list" id="modal-events"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_3YfWXlddnwcNO8cARA9V9z4MKNzQLck",
+      authDomain: "calender-e9fdf.firebaseapp.com",
+      databaseURL: "https://calender-e9fdf-default-rtdb.firebaseio.com",
+      projectId: "calender-e9fdf",
+      storageBucket: "calender-e9fdf.firebasestorage.app",
+      messagingSenderId: "412493241459",
+      appId: "1:412493241459:web:0ee6ee18ae898809a11e06"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const dbRef = db.ref('shared_schedule');
+
+    var HOLIDAYS = {
+      "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날",
+      "06-06": "현충일", "08-15": "광복절", "10-03": "개천절",
+      "10-09": "한글날", "12-25": "성탄절"
+    };
+
+    var SHIFTS = ['D', 'S', 'G', 'O', 'F', '휴'];
+    var currentDate = new Date();
+    var selectedDateStr = "";
+    
+    var appState = {
+      userA: "양지",
+      userB: "상준",
+      shifts: {},
+      events: {}
+    };
+
+    function setTheme(mode) {
+      var btnSun = document.getElementById('btn-sun');
+      var btnMoon = document.getElementById('btn-moon');
+      var title = document.getElementById('header-title');
+
+      if (mode === 'dark') {
+        document.body.classList.add('dark-mode');
+        btnSun.classList.remove('active');
+        btnMoon.classList.add('active');
+        title.innerText = "༼ つ -'o'- ༽つⓒⓐⓛⓔⓝⓓⓔⓡ";
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-mode');
+        btnMoon.classList.remove('active');
+        btnSun.classList.add('active');
+        title.innerText = "༼ つ -'o'- ༽つ 🅒🅐🅛🅔🅝🅓🅔🅡";
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // 초기 테마 적용
+    if (localStorage.getItem('theme') === 'dark') {
+      setTimeout(function() { setTheme('dark'); }, 0);
+    }
+
+    dbRef.on('value', function(snapshot) {
+      var data = snapshot.val();
+      if (data) {
+        appState = data;
+        if (!appState.shifts) appState.shifts = {};
+        if (!appState.events) appState.events = {};
+      }
+      renderCalendar();
+    });
+
+    function saveData() {
+      dbRef.set(appState);
+    }
+
+    function saveUserNames() {
+      appState.userA = document.getElementById('userA-name').value || "양지";
+      appState.userB = document.getElementById('userB-name').value || "상준";
+      saveData();
+    }
+
+    function renderCalendar() {
+      var userAName = appState.userA || "양지";
+      var userBName = appState.userB || "상준";
+      document.getElementById('userA-name').value = userAName;
+      document.getElementById('userB-name').value = userBName;
+
+      var year = currentDate.getFullYear();
+      var month = currentDate.getMonth();
+
+      document.getElementById('month-year-display').innerText = year + '년 ' + (month + 1) + '월';
+
+      var firstDay = new Date(year, month, 1).getDay();
+      var lastDate = new Date(year, month + 1, 0).getDate();
+      var prevLastDate = new Date(year, month, 0).getDate();
+      
+      var calendarBody = document.getElementById('calendar-body');
+      calendarBody.innerHTML = '';
+
+      var totalCells = firstDay + lastDate;
+      var totalRows = Math.ceil(totalCells / 7);
+
+      var currentDay = 1;
+      var nextMonthDay = 1;
+
+      for (var r = 0; r < totalRows; r++) {
+        var weekRow = document.createElement('div');
+        weekRow.className = 'week-row';
+
+        var sideCell = document.createElement('div');
+        sideCell.className = 'side-user-cell';
+        sideCell.innerHTML = '<div class="side-name-tag">' + userAName + '</div><div class="side-name-tag">' + userBName + '</div>';
+        weekRow.appendChild(sideCell);
+
+        var daysGrid = document.createElement('div');
+        daysGrid.className = 'days-grid-row';
+
+        for (var c = 0; c < 7; c++) {
+          var cell = document.createElement('div');
+          var cellIndex = r * 7 + c;
+
+          if (cellIndex < firstDay) {
+            cell.className = 'day-cell other-month';
+            var prevDayNum = prevLastDate - (firstDay - 1 - cellIndex);
+            cell.innerHTML = '<div class="day-header"><span class="day-num">' + prevDayNum + '</span></div>';
+          } else if (currentDay <= lastDate) {
+            cell.className = 'day-cell';
+            (function(d) {
+              var monthStr = (month + 1 < 10 ? '0' : '') + (month + 1);
+              var dayStr = (d < 10 ? '0' : '') + d;
+              var dateStr = year + '-' + monthStr + '-' + dayStr;
+              
+              var dayOfWeek = new Date(year, month, d).getDay();
+              var mmdd = monthStr + '-' + dayStr;
+              var holidayName = HOLIDAYS[mmdd];
+
+              cell.onclick = function() { openDayModal(dateStr, holidayName); };
+
+              var numClass = 'day-num';
+              if (dayOfWeek === 0) numClass += ' is-sun';
+              else if (dayOfWeek === 6) numClass += ' is-sat';
+              if (holidayName) numClass += ' is-holiday';
+
+              var dayShifts = appState.shifts[dateStr] || {};
+              var dayEventsData = appState.events[dateStr] || {};
+
+              var eventsA = Array.isArray(dayEventsData.A) ? dayEventsData.A : (Array.isArray(dayEventsData) ? dayEventsData : []);
+              var eventsB = Array.isArray(dayEventsData.B) ? dayEventsData.B : [];
+
+              var html = '<div class="day-header">';
+              html += '<span class="' + numClass + '">' + d + '</span>';
+              if (holidayName) {
+                html += '<span class="holiday-name">' + holidayName + '</span>';
+              }
+              html += '</div><div class="shifts-container">';
+
+              html += '<div class="shift-row">';
+              if (dayShifts.A) {
+                html += '<span class="badge badge-' + dayShifts.A + '">' + dayShifts.A + '</span>';
+              }
+              if (eventsA.length > 0) {
+                html += '<span class="inline-event">' + eventsA[0] + '</span>';
+              }
+              html += '</div>';
+
+              html += '<div class="shift-row">';
+              if (dayShifts.B) {
+                html += '<span class="badge badge-' + dayShifts.B + '">' + dayShifts.B + '</span>';
+              }
+              if (eventsB.length > 0) {
+                html += '<span class="inline-event">' + eventsB[0] + '</span>';
+              }
+              html += '</div>';
+
+              html += '</div>';
+              cell.innerHTML = html;
+            })(currentDay);
+            currentDay++;
+          } else {
+            cell.className = 'day-cell other-month';
+            cell.innerHTML = '<div class="day-header"><span class="day-num">' + nextMonthDay + '</span></div>';
+            nextMonthDay++;
+          }
+
+          daysGrid.appendChild(cell);
+        }
+
+        weekRow.appendChild(daysGrid);
+        calendarBody.appendChild(weekRow);
+      }
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderCalendar();
+    }
+
+    function openDayModal(dateStr, holidayName) {
+      selectedDateStr = dateStr;
+      var userAName = appState.userA || "양지";
+      var userBName = appState.userB || "상준";
+
+      document.getElementById('modal-date-title').innerText = dateStr + (holidayName ? ' (' + holidayName + ')' : '');
+      document.getElementById('label-userA').innerText = userAName;
+      document.getElementById('label-userB').innerText = userBName;
+      document.getElementById('radio-userA-label').innerText = userAName;
+      document.getElementById('radio-userB-label').innerText = userBName;
+
+      renderShiftBtns('group-userA', 'A');
+      renderShiftBtns('group-userB', 'B');
+      renderModalEvents();
+
+      document.getElementById('day-modal').className = 'modal active';
+    }
+
+    function navigateModalDate(deltaDays) {
+      var parts = selectedDateStr.split('-');
+      var dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      dt.setDate(dt.getDate() + deltaDays);
+
+      var year = dt.getFullYear();
+      var month = dt.getMonth();
+      var monthStr = (month + 1 < 10 ? '0' : '') + (month + 1);
+      var dayStr = (dt.getDate() < 10 ? '0' : '') + dt.getDate();
+      var newDateStr = year + '-' + monthStr + '-' + dayStr;
+      
+      var mmdd = monthStr + '-' + dayStr;
+      var holidayName = HOLIDAYS[mmdd];
+
+      if (month !== currentDate.getMonth() || year !== currentDate.getFullYear()) {
+        currentDate = new Date(year, month, 1);
+        renderCalendar();
+      }
+
+      openDayModal(newDateStr, holidayName);
+    }
+
+    function renderShiftBtns(containerId, userKey) {
+      var container = document.getElementById(containerId);
+      container.innerHTML = '';
+      var currentShift = (appState.shifts[selectedDateStr] || {})[userKey];
+
+      SHIFTS.forEach(function(s) {
+        var btn = document.createElement('button');
+        btn.className = 'shift-btn btn-' + s + (currentShift === s ? ' active' : '');
+        btn.innerText = s;
+        btn.onclick = function() {
+          if (!appState.shifts[selectedDateStr]) appState.shifts[selectedDateStr] = {};
+          if (appState.shifts[selectedDateStr][userKey] === s) {
+            delete appState.shifts[selectedDateStr][userKey];
+          } else {
+            appState.shifts[selectedDateStr][userKey] = s;
+          }
+          saveData();
+          renderShiftBtns(containerId, userKey);
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function addEvent() {
+      var input = document.getElementById('new-event-text');
+      var val = input.value ? input.value.trim() : '';
+      if (!val) return;
+
+      var targetUser = document.querySelector('input[name="event-user"]:checked').value;
+
+      if (!appState.events[selectedDateStr]) appState.events[selectedDateStr] = { A: [], B: [] };
+      if (Array.isArray(appState.events[selectedDateStr])) {
+        var old = appState.events[selectedDateStr];
+        appState.events[selectedDateStr] = { A: old, B: [] };
+      }
+      if (!appState.events[selectedDateStr][targetUser]) {
+        appState.events[selectedDateStr][targetUser] = [];
+      }
+
+      appState.events[selectedDateStr][targetUser].push(val);
+      input.value = '';
+      saveData();
+      renderModalEvents();
+    }
+
+    function deleteEvent(userKey, idx) {
+      if (appState.events[selectedDateStr] && appState.events[selectedDateStr][userKey]) {
+        appState.events[selectedDateStr][userKey].splice(idx, 1);
+        saveData();
+        renderModalEvents();
+      }
+    }
+
+    function renderModalEvents() {
+      var container = document.getElementById('modal-events');
+      var dayEventsData = appState.events[selectedDateStr] || {};
+      var eventsA = Array.isArray(dayEventsData.A) ? dayEventsData.A : (Array.isArray(dayEventsData) ? dayEventsData : []);
+      var eventsB = Array.isArray(dayEventsData.B) ? dayEventsData.B : [];
+
+      var userAName = appState.userA || "양지";
+      var userBName = appState.userB || "상준";
+
+      var html = '';
+      
+      eventsA.forEach(function(evt, i) {
+        html += '<div class="modal-event-item"><span>[' + userAName + '] ' + evt + '</span><button class="del-btn" onclick="deleteEvent(\'A\', ' + i + ')"><i class="fa-solid fa-trash"></i></button></div>';
+      });
+
+      eventsB.forEach(function(evt, i) {
+        html += '<div class="modal-event-item"><span>[' + userBName + '] ' + evt + '</span><button class="del-btn" onclick="deleteEvent(\'B\', ' + i + ')"><i class="fa-solid fa-trash"></i></button></div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    function closeModal() {
+      document.getElementById('day-modal').className = 'modal';
+    }
+
+    /* 📱 손가락 좌우 스와이프 터치 이벤트 */
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var swipeArea = document.getElementById('swipe-area');
+
+    swipeArea.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, false);
+
+    swipeArea.addEventListener('touchend', function(e) {
+      var touchEndX = e.changedTouches[0].screenX;
+      var touchEndY = e.changedTouches[0].screenY;
+      
+      var diffX = touchEndX - touchStartX;
+      var diffY = touchEndY - touchStartY;
+
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+        if (diffX < 0) {
+          changeMonth(1);
+        } else {
+          changeMonth(-1);
+        }
+      }
+    }, false);
+  </script>
+</body>
+</html>
