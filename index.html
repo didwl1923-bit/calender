@@ -3,10 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- 📱 PWA (앱 설치) 및 웹 앱 설정 -->
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ᶜᵃˡᵉᶰᵈᵉʳ">
+  
   <!-- 🍀 핸드폰 홈 화면 & 브라우저 탭 클로버 아이콘 -->
   <link rel="apple-touch-icon" href="https://i.imgur.com/2SEibeV.jpeg">
   <link rel="shortcut icon" href="https://i.imgur.com/2SEibeV.jpeg">
   <link rel="icon" href="https://i.imgur.com/2SEibeV.jpeg">
+  
+  <!-- 🚀 브라우저 앱 설치([설치] 버튼 활성화) 매니페스트 인라인 설정 -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"ᶜᵃˡᵉᶰᵈᵉʳ","short_name":"ᶜᵃˡᵉᶰᵈᵉʳ","start_url":".","display":"standalone","background_color":"#ffffff","theme_color":"#ffffff","icons":[{"src":"https://i.imgur.com/2SEibeV.jpeg","sizes":"192x192","type":"image/jpeg"},{"src":"https://i.imgur.com/2SEibeV.jpeg","sizes":"512x512","type":"image/jpeg"}]}'>
+
   <title>ᶜᵃˡᵉᶰᵈᵉʳ</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -231,7 +243,6 @@
       user-select: none;
     }
 
-    /* 📌 가로 행 높이 85px로 엄격 고정 및 넘침 숨김 */
     .week-row {
       display: flex;
       height: 85px;
@@ -276,7 +287,6 @@
       height: 85px;
     }
 
-    /* 📌 날짜 셀 높이 85px 엄격 고정 & 일정 넘침 숨김 처리 */
     .day-cell {
       border-right: 1px solid var(--border-light);
       padding: 4px 2px 6px 2px;
@@ -946,7 +956,6 @@
       document.getElementById('day-modal').className = 'modal';
     }
 
-    /* 📱 손가락 좌우 스와이프 터치 이벤트 */
     var touchStartX = 0;
     var touchStartY = 0;
     var swipeArea = document.getElementById('swipe-area');
