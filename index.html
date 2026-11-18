@@ -862,16 +862,19 @@
               }
               html += '</div>';
 
-              // 하단: 일정 2줄 유지 (글자 크기 축소)
+              // 하단: 일정 2줄 유지 (낮=Y 위 / 밤=S 위)
+              var topEvents = isDark ? eventsB : eventsA;
+              var bottomEvents = isDark ? eventsA : eventsB;
+
               html += '<div class="events-area">';
               html += '<div class="event-slot">';
-              if (eventsA.length > 0) {
-                html += '<span class="inline-event">' + eventsA[0] + '</span>';
+              if (topEvents.length > 0) {
+                html += '<span class="inline-event">' + topEvents[0] + '</span>';
               }
               html += '</div>';
               html += '<div class="event-slot">';
-              if (eventsB.length > 0) {
-                html += '<span class="inline-event">' + eventsB[0] + '</span>';
+              if (bottomEvents.length > 0) {
+                html += '<span class="inline-event">' + bottomEvents[0] + '</span>';
               }
               html += '</div>';
               html += '</div>';
