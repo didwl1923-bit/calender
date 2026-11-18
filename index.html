@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <!-- 📱 PWA (앱 설치) 및 웹 앱 설정 -->
+  <!-- PWA (앱 설치) 및 웹 앱 설정 -->
   <meta name="theme-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="ᶜᵃˡᵉᶰᵈᵉʳ">
   
-  <!-- 🍀 아이콘 & 매니페스트 인라인 설정 -->
+  <!-- 아이콘 & 매니페스트 인라인 설정 -->
   <link rel="apple-touch-icon" href="https://i.imgur.com/2SEibeV.jpeg">
   <link rel="shortcut icon" href="https://i.imgur.com/2SEibeV.jpeg">
   <link rel="icon" href="https://i.imgur.com/2SEibeV.jpeg">
@@ -35,7 +35,6 @@
       --border-light: #f1f5f9;
       --sun-red: #ef4444;
       --sat-blue: #3b82f6;
-      --side-bg: #f8fafc;
       --modal-bg: #ffffff;
       --modal-item-bg: #f1f5f9;
       --other-month-bg: #fafafa;
@@ -54,7 +53,6 @@
       --border-light: #334155;
       --sun-red: #f87171;
       --sat-blue: #60a5fa;
-      --side-bg: #0f172a;
       --modal-bg: #1e293b;
       --modal-item-bg: #334155;
       --other-month-bg: #0f172a;
@@ -112,10 +110,26 @@
       width: 100%;
     }
 
+    .title-area {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .title-area h1 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--text-main);
+    }
+
+    .owner-pill {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      background: var(--modal-item-bg);
+      color: var(--primary);
+      border: 1px solid var(--border);
     }
 
     .theme-toggle-group {
@@ -170,19 +184,7 @@
       cursor: pointer;
     }
 
-    .weekdays-wrapper {
-      display: flex;
-      border-bottom: 1px solid var(--border);
-      background: var(--card-bg);
-    }
-
-    .side-label-header {
-      width: 22px;
-      flex-shrink: 0;
-      border-right: 1px solid var(--border);
-      background: var(--side-bg);
-    }
-
+    /* 3. 좌측 Y/S 사이드 열 삭제 -> 7일 전체 너비 사용 */
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -191,7 +193,8 @@
       font-weight: 700;
       color: var(--text-sub);
       padding: 6px 0;
-      flex: 1;
+      border-bottom: 1px solid var(--border);
+      background: var(--card-bg);
     }
 
     .weekdays div:nth-child(1) { color: var(--sun-red); }
@@ -204,72 +207,51 @@
       user-select: none;
     }
 
+    /* 5. 세로 공간 넉넉하게 확장 (106px) */
     .week-row {
-      display: flex;
-      height: 95px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      height: 106px;
       border-bottom: 1px solid var(--border-light);
       overflow: hidden;
     }
 
-    .side-user-cell {
-      width: 22px;
-      height: 95px;
-      flex-shrink: 0;
-      background: var(--side-bg);
-      border-right: 1px solid var(--border);
-      padding: 4px 0 6px 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 6px;
-      overflow: hidden;
-    }
-
-    .side-name-tag {
-      height: 20px;
-      line-height: 20px;
-      font-size: 0.65rem;
-      font-weight: 800;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-    }
-
-    .days-grid-row {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      flex: 1;
-      height: 95px;
-    }
-
     .day-cell {
       border-right: 1px solid var(--border-light);
-      padding: 3px 2px 4px 2px;
+      padding: 4px 2px 4px 2px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
-      height: 95px;
+      height: 106px;
       overflow: hidden;
     }
 
     .day-cell:nth-child(7n) { border-right: none; }
 
+    /* 상단 영역: 좌측(날짜+공휴일) / 우측(상대방 미니 배지) */
     .day-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 1px;
+      padding: 0 2px;
       height: 16px;
+      gap: 2px;
+    }
+
+    .day-num-group {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      overflow: hidden;
+      min-width: 0;
     }
 
     .day-num {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--text-main);
+      flex-shrink: 0;
     }
 
     .is-sun, .is-holiday { color: var(--sun-red) !important; }
@@ -282,38 +264,46 @@
     }
 
     .holiday-name {
-      font-size: 0.55rem;
+      font-size: 0.5rem;
       color: var(--sun-red);
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 32px;
     }
 
-    .shifts-container {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      overflow: hidden;
-    }
-
-    .shift-row {
+    /* 1. 메인 근무 (정중앙 배치) */
+    .main-shift-area {
+      flex: 1;
       display: flex;
       align-items: center;
-      gap: 2px;
-      height: 20px;
-      white-space: nowrap;
-      overflow: hidden;
+      justify-content: center;
+      min-height: 30px;
     }
 
-    .badge {
-      width: 18px;
-      height: 18px;
-      line-height: 18px;
-      border-radius: 5px;
+  .badge-main {
+      width: 23px;
+      height: 23px;
+      line-height: 23px;
+      border-radius: 50%;
+      font-weight: 900;
+      font-size: 0.74rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none !important;
+      padding: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    /* 1. 서브 근무 (오른쪽 상단 작은 크기) */
+    .badge-sub {
+      width: 14px;
+      height: 14px;
+      line-height: 14px;
+      border-radius: 4px;
       font-weight: 800;
-      font-size: 0.62rem;
+      font-size: 0.52rem;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
@@ -331,16 +321,36 @@
     .badge-휴 { background: #FFF0F5; color: #E04868; }
     body.dark-mode .badge-휴 { background: #33141e; color: #FF4D4D; }
 
+    /* 2. 하단 일정 2줄 유지 + 더 작은 글자 크기 */
+    .events-area {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      height: 32px;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .event-slot {
+      height: 14px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
     .inline-event {
-      font-size: 0.58rem;
+      width: 100%;
+      font-size: 0.52rem;
+      line-height: 1.1;
       background: var(--event-bg);
       color: var(--event-text);
-      padding: 1px 4px;
-      border-radius: 4px;
+      padding: 1px 3px;
+      border-radius: 3px;
       font-weight: 700;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      letter-spacing: -0.3px;
     }
 
     .modal {
@@ -435,16 +445,16 @@
 
     .btn-group {
       display: flex;
-      gap: 4px;
+      gap: 5px;
       flex-wrap: wrap;
     }
 
     .shift-btn {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       font-weight: 800;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       cursor: pointer;
       transition: all 0.15s ease;
       display: flex;
@@ -467,7 +477,6 @@
       box-shadow: 0 0 0 3px var(--primary);
     }
 
-    /* 💡 일괄 지정 한 줄 레이아웃 최적화 */
     .batch-shift-container {
       background: var(--modal-item-bg);
       border-radius: 10px;
@@ -487,6 +496,17 @@
       gap: 4px;
       align-items: center;
       width: 100%;
+    }
+
+    .batch-user-badge {
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary);
+      flex-shrink: 0;
     }
 
     .batch-inputs select {
@@ -531,21 +551,6 @@
       cursor: pointer;
       flex-shrink: 0;
       white-space: nowrap;
-    }
-
-    .event-user-selector {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 8px;
-      font-size: 0.85rem;
-      font-weight: 700;
-    }
-
-    .event-user-selector label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
     }
 
     .event-input-group {
@@ -608,10 +613,11 @@
       <div class="title-wrapper">
         <div class="title-area">
           <h1 id="header-title">༼ つ -'o'- ༽つ 🅒🅐🅛🅔🅝🅓🅔🅡</h1>
+          <span class="owner-pill" id="mode-owner-badge"></span>
         </div>
         <div class="theme-toggle-group">
-          <button class="theme-btn active" id="btn-sun" onclick="setTheme('light')" title="라이트 모드">☀️</button>
-          <button class="theme-btn" id="btn-moon" onclick="setTheme('dark')" title="다크 모드">🌙</button>
+          <button class="theme-btn active" id="btn-sun" onclick="setTheme('light')" title="라이트 모드 (양지)">☀️</button>
+          <button class="theme-btn" id="btn-moon" onclick="setTheme('dark')" title="다크 모드 (상준)">🌙</button>
         </div>
       </div>
     </header>
@@ -622,11 +628,8 @@
       <button class="nav-btn" onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <div class="weekdays-wrapper">
-      <div class="side-label-header"></div>
-      <div class="weekdays">
-        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
-      </div>
+    <div class="weekdays">
+      <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
     </div>
 
     <div class="calendar-body" id="calendar-body"></div>
@@ -643,25 +646,19 @@
         <button class="icon-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
+      <!-- 4. 현재 모드(낮=Y, 밤=S)에 해당하는 사람만 근무 선택 가능 -->
       <div class="shift-select-group">
         <div class="user-shift-select">
-          <span>Y</span>
-          <div class="btn-group" id="group-userA"></div>
-        </div>
-        <div class="user-shift-select">
-          <span>S</span>
-          <div class="btn-group" id="group-userB"></div>
+          <span id="active-user-label">Y</span>
+          <div class="btn-group" id="group-activeUser"></div>
         </div>
       </div>
 
-      <!-- 💡 한 줄로 깔끔하게 정렬된 연속 지정 영역 -->
+      <!-- 현재 모드 대상자 연속 근무 지정 -->
       <div class="batch-shift-container">
-        <div class="batch-title">📅</div>
+        <div class="batch-title">📅 연속 근무 지정 (<span id="batch-owner-text">Y</span>)</div>
         <div class="batch-inputs">
-          <select id="batch-user">
-            <option value="A">Y</option>
-            <option value="B">S</option>
-          </select>
+          <span class="batch-user-badge" id="batch-user-badge">Y</span>
           <select id="batch-shift">
             <option value="D">D</option>
             <option value="S">S</option>
@@ -678,12 +675,9 @@
         </div>
       </div>
 
+      <!-- 4. 일정 추가는 현재 모드 대상자만 가능 / 조회는 Y, S 모두 표시 -->
       <div style="border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px;">
-        <h4 style="font-size:0.85rem; margin-bottom: 8px;">일정 추가</h4>
-        <div class="event-user-selector">
-          <label><input type="radio" name="event-user" value="A" checked> <span>Y</span></label>
-          <label><input type="radio" name="event-user" value="B"> <span>S</span></label>
-        </div>
+        <h4 style="font-size:0.85rem; margin-bottom: 8px;">일정 추가 (<span id="event-owner-text">Y</span>)</h4>
         <div class="event-input-group">
           <input type="text" id="new-event-text" placeholder="새 일정 입력...">
           <button class="primary-btn" onclick="addEvent()">추가</button>
@@ -717,6 +711,7 @@
     var SHIFTS = ['D', 'S', 'G', 'O', 'F', '교', '휴'];
     var currentDate = new Date();
     var selectedDateStr = "";
+    var currentTheme = 'light'; // 'light' = 양지(A), 'dark' = 상준(B)
     
     var appState = {
       userA: "Y",
@@ -725,27 +720,47 @@
       events: {}
     };
 
+    function getActiveUserKey() {
+      return currentTheme === 'dark' ? 'B' : 'A';
+    }
+
+    function getActiveUserShortName() {
+      return currentTheme === 'dark' ? 'S' : 'Y';
+    }
+
     function setTheme(mode) {
+      currentTheme = mode;
       var btnSun = document.getElementById('btn-sun');
       var btnMoon = document.getElementById('btn-moon');
       var title = document.getElementById('header-title');
+      var ownerBadge = document.getElementById('mode-owner-badge');
 
       if (mode === 'dark') {
         document.body.classList.add('dark-mode');
         btnSun.classList.remove('active');
         btnMoon.classList.add('active');
         title.innerText = "༼ つ -'o'- ༽つⓒⓐⓛⓔⓝⓓⓔⓡ";
+        ownerBadge.innerText = "—̳͟͞͞♡";
         localStorage.setItem('theme', 'dark');
       } else {
         document.body.classList.remove('dark-mode');
         btnMoon.classList.remove('active');
         btnSun.classList.add('active');
         title.innerText = "༼ つ -'o'- ༽つ 🅒🅐🅛🅔🅝🅓🅔🅡";
+        ownerBadge.innerText = "—̳͟͞͞♥";
         localStorage.setItem('theme', 'light');
+      }
+
+      renderCalendar();
+
+      // 모달이 열려있는 상태에서 테마 전환 시 모달 내용도 즉시 반영
+      if (document.getElementById('day-modal').classList.contains('active') && selectedDateStr) {
+        updateModalForActiveUser();
       }
     }
 
     if (localStorage.getItem('theme') === 'dark') {
+      currentTheme = 'dark';
       setTimeout(function() { setTheme('dark'); }, 0);
     }
 
@@ -757,6 +772,10 @@
         if (!appState.events) appState.events = {};
       }
       renderCalendar();
+      if (document.getElementById('day-modal').classList.contains('active') && selectedDateStr) {
+        renderShiftBtns();
+        renderModalEvents();
+      }
     });
 
     function saveData() {
@@ -766,6 +785,7 @@
     function renderCalendar() {
       var year = currentDate.getFullYear();
       var month = currentDate.getMonth();
+      var isDark = (currentTheme === 'dark');
 
       document.getElementById('month-year-display').innerText = year + '년 ' + (month + 1) + '월';
 
@@ -786,14 +806,6 @@
         var weekRow = document.createElement('div');
         weekRow.className = 'week-row';
 
-        var sideCell = document.createElement('div');
-        sideCell.className = 'side-user-cell';
-        sideCell.innerHTML = '<div class="side-name-tag">Y</div><div class="side-name-tag">S</div>';
-        weekRow.appendChild(sideCell);
-
-        var daysGrid = document.createElement('div');
-        daysGrid.className = 'days-grid-row';
-
         for (var c = 0; c < 7; c++) {
           var cell = document.createElement('div');
           var cellIndex = r * 7 + c;
@@ -801,7 +813,7 @@
           if (cellIndex < firstDay) {
             cell.className = 'day-cell other-month';
             var prevDayNum = prevLastDate - (firstDay - 1 - cellIndex);
-            cell.innerHTML = '<div class="day-header"><span class="day-num">' + prevDayNum + '</span></div>';
+            cell.innerHTML = '<div class="day-header"><div class="day-num-group"><span class="day-num">' + prevDayNum + '</span></div></div>';
           } else if (currentDay <= lastDate) {
             cell.className = 'day-cell';
             (function(d) {
@@ -826,45 +838,56 @@
               var eventsA = Array.isArray(dayEventsData.A) ? dayEventsData.A : (Array.isArray(dayEventsData) ? dayEventsData : []);
               var eventsB = Array.isArray(dayEventsData.B) ? dayEventsData.B : [];
 
+              // 1. 낮 모드: 메인=A(양지), 우측상단=B(상준) / 밤 모드: 메인=B(상준), 우측상단=A(양지)
+              var mainShift = isDark ? dayShifts.B : dayShifts.A;
+              var subShift = isDark ? dayShifts.A : dayShifts.B;
+
+              // 상단: 좌측(날짜+공휴일) / 우측 상단(상대방 미니 배지)
               var html = '<div class="day-header">';
+              html += '<div class="day-num-group">';
               html += '<span class="' + numClass + '">' + d + '</span>';
               if (holidayName) {
                 html += '<span class="holiday-name">' + holidayName + '</span>';
               }
-              html += '</div><div class="shifts-container">';
-
-              html += '<div class="shift-row">';
-              if (dayShifts.A) {
-                html += '<span class="badge badge-' + dayShifts.A + '">' + dayShifts.A + '</span>';
+              html += '</div>';
+              if (subShift) {
+                html += '<span class="badge-sub badge-' + subShift + '">' + subShift + '</span>';
               }
+              html += '</div>';
+
+              // 중앙: 메인 근무 (가운데 정렬)
+              html += '<div class="main-shift-area">';
+              if (mainShift) {
+                html += '<span class="badge-main badge-' + mainShift + '">' + mainShift + '</span>';
+              }
+              html += '</div>';
+
+              // 하단: 일정 2줄 유지 (글자 크기 축소)
+              html += '<div class="events-area">';
+              html += '<div class="event-slot">';
               if (eventsA.length > 0) {
                 html += '<span class="inline-event">' + eventsA[0] + '</span>';
               }
               html += '</div>';
-
-              html += '<div class="shift-row">';
-              if (dayShifts.B) {
-                html += '<span class="badge badge-' + dayShifts.B + '">' + dayShifts.B + '</span>';
-              }
+              html += '<div class="event-slot">';
               if (eventsB.length > 0) {
                 html += '<span class="inline-event">' + eventsB[0] + '</span>';
               }
               html += '</div>';
-
               html += '</div>';
+
               cell.innerHTML = html;
             })(currentDay);
             currentDay++;
           } else {
             cell.className = 'day-cell other-month';
-            cell.innerHTML = '<div class="day-header"><span class="day-num">' + nextMonthDay + '</span></div>';
+            cell.innerHTML = '<div class="day-header"><div class="day-num-group"><span class="day-num">' + nextMonthDay + '</span></div></div>';
             nextMonthDay++;
           }
 
-          daysGrid.appendChild(cell);
+          weekRow.appendChild(cell);
         }
 
-        weekRow.appendChild(daysGrid);
         calendarBody.appendChild(weekRow);
       }
     }
@@ -874,18 +897,24 @@
       renderCalendar();
     }
 
+    function updateModalForActiveUser() {
+      var shortName = getActiveUserShortName();
+      document.getElementById('active-user-label').innerText = shortName;
+      document.getElementById('batch-owner-text').innerText = shortName;
+      document.getElementById('batch-user-badge').innerText = shortName;
+      document.getElementById('event-owner-text').innerText = shortName;
+      renderShiftBtns();
+      renderModalEvents();
+    }
+
     function openDayModal(dateStr, holidayName) {
       selectedDateStr = dateStr;
 
       document.getElementById('modal-date-title').innerText = dateStr + (holidayName ? ' (' + holidayName + ')' : '');
-
       document.getElementById('batch-start').value = selectedDateStr;
       document.getElementById('batch-end').value = selectedDateStr;
 
-      renderShiftBtns('group-userA', 'A');
-      renderShiftBtns('group-userB', 'B');
-      renderModalEvents();
-
+      updateModalForActiveUser();
       document.getElementById('day-modal').className = 'modal active';
     }
 
@@ -911,10 +940,15 @@
       openDayModal(newDateStr, holidayName);
     }
 
-    function renderShiftBtns(containerId, userKey) {
-      var container = document.getElementById(containerId);
+    function renderShiftBtns() {
+      var container = document.getElementById('group-activeUser');
+      var userKey = getActiveUserKey();
       container.innerHTML = '';
       var currentShift = (appState.shifts[selectedDateStr] || {})[userKey];
+
+      if (currentShift) {
+        document.getElementById('batch-shift').value = currentShift;
+      }
 
       SHIFTS.forEach(function(s) {
         var btn = document.createElement('button');
@@ -927,19 +961,17 @@
             delete appState.shifts[selectedDateStr][userKey];
           } else {
             appState.shifts[selectedDateStr][userKey] = s;
-            /* 💡 클릭한 근무와 대상(Y/S)이 연속 지정 셀렉트 박스에도 즉시 자동 선택됨 */
-            document.getElementById('batch-user').value = userKey;
             document.getElementById('batch-shift').value = s;
           }
           saveData();
-          renderShiftBtns(containerId, userKey);
+          renderShiftBtns();
         };
         container.appendChild(btn);
       });
     }
 
     function applyBatchShift() {
-      var userKey = document.getElementById('batch-user').value;
+      var userKey = getActiveUserKey();
       var shiftVal = document.getElementById('batch-shift').value;
       var startStr = document.getElementById('batch-start').value;
       var endStr = document.getElementById('batch-end').value;
@@ -971,7 +1003,7 @@
       }
 
       saveData();
-      renderShiftBtns('group-' + (userKey === 'A' ? 'userA' : 'userB'), userKey);
+      renderShiftBtns();
       alert("근무가 성공적으로 지정되었습니다!");
     }
 
@@ -980,7 +1012,7 @@
       var val = input.value ? input.value.trim() : '';
       if (!val) return;
 
-      var targetUser = document.querySelector('input[name="event-user"]:checked').value;
+      var targetUser = getActiveUserKey();
 
       if (!appState.events[selectedDateStr]) appState.events[selectedDateStr] = { A: [], B: [] };
       if (Array.isArray(appState.events[selectedDateStr])) {
@@ -1010,15 +1042,24 @@
       var dayEventsData = appState.events[selectedDateStr] || {};
       var eventsA = Array.isArray(dayEventsData.A) ? dayEventsData.A : (Array.isArray(dayEventsData) ? dayEventsData : []);
       var eventsB = Array.isArray(dayEventsData.B) ? dayEventsData.B : [];
+      var activeKey = getActiveUserKey();
 
       var html = '';
       
       eventsA.forEach(function(evt, i) {
-        html += '<div class="modal-event-item"><span>[Y] ' + evt + '</span><button class="del-btn" onclick="deleteEvent(\'A\', ' + i + ')"><i class="fa-solid fa-trash"></i></button></div>';
+        html += '<div class="modal-event-item"><span>[Y] ' + evt + '</span>';
+        if (activeKey === 'A') {
+          html += '<button class="del-btn" onclick="deleteEvent(\'A\', ' + i + ')"><i class="fa-solid fa-trash"></i></button>';
+        }
+        html += '</div>';
       });
 
       eventsB.forEach(function(evt, i) {
-        html += '<div class="modal-event-item"><span>[S] ' + evt + '</span><button class="del-btn" onclick="deleteEvent(\'B\', ' + i + ')"><i class="fa-solid fa-trash"></i></button></div>';
+        html += '<div class="modal-event-item"><span>[S] ' + evt + '</span>';
+        if (activeKey === 'B') {
+          html += '<button class="del-btn" onclick="deleteEvent(\'B\', ' + i + ')"><i class="fa-solid fa-trash"></i></button>';
+        }
+        html += '</div>';
       });
 
       container.innerHTML = html;
